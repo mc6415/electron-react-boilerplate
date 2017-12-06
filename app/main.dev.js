@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint global-require: 1, flowtype-errors/show-errors: 0 */
 
 /**
@@ -11,9 +12,32 @@
  * @flow
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { ConnectionPool } from 'mssql';
+import User from './models/user';
 import MenuBuilder from './menu';
 
+const mongoose = require('mongoose');
+const sql = require('mssql');
+
+const bcrypt = require('bcrypt-nodejs');
+
 const ipc = ipcMain;
+
+const config = {
+  user: 'sa',
+  password: 'ir3ewkrmnldwm543dniwr',
+  server: 'alto.alberon.co.uk',
+  port: 2433,
+  database: 'AppleReports',
+  requestTimeout: 30000,
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 30000
+  }
+};
+
+mongoose.connect('mongodb://mcoombes:mcoombes@ds129386.mlab.com:29386/electronnotes', { useMongoClient: true });
 
 let mainWindow = null;
 
@@ -64,9 +88,10 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
-    height: 728,
-    frame: false
+    height: 728
   });
+
+  mainWindow.setMenu(null);
 
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
@@ -84,10 +109,36 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  // const menuBuilder = new MenuBuilder(mainWindow);
+  // menuBuilder.buildMenu();
 });
 
-ipc.on('test', (event, user) => {
-  console.log(user);
+ipc.on('test', (event) => {
+  const hash = bcrypt.hashSync('test');
+  console.log(hash);
+  console.log(bcrypt.compareSync('test', hash));
+});
+
+ipc.on('registerUser', (event, user) => {
+  const hash = bcrypt.hashSync(user.password);
+
+  const newUser = new User();
+
+  newUser.username = user.username;
+  newUser.lastsName = user.surname;
+  newUser.email = user.email;
+  newUser.firstName = user.firstname;
+  newUser.password = bcrypt.hashSync(user.password);
+
+  newUser.save();
+
+  event.sender.send('UserAdded');
+});
+
+ipc.on('loginUser', (event, login) => {
+  User.find({ username: login.username }, (err, docs) => {
+    const user = docs[0];
+
+    console.log(bcrypt.compareSync(login.password, user.password));
+  });
 });

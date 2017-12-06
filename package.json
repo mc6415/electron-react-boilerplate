@@ -192,6 +192,7 @@
     "history": "^4.6.3",
     "jquery": "^3.2.1",
     "mongoose": "^4.13.6",
+    "mssql": "^4.1.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-hot-loader": "3.0.0-beta.6",
@@ -202,7 +203,8 @@
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
     "semantic-ui-react": "^0.77.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "tedious": "^2.1.5"
   },
   "devEngines": {
     "node": ">=7.x",
