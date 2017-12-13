@@ -10,8 +10,15 @@
  *
  * @flow
  */
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import MenuBuilder from './menu';
+
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt-nodejs');
+const ipc = ipcMain;
+
+// Connect to mongodb
+mongoose.connect('mongodb://178.62.39.187:27017', { useMongoClient: true });
 
 let mainWindow = null;
 
@@ -65,6 +72,8 @@ app.on('ready', async () => {
     height: 728
   });
 
+  mainWindow.setMenu(null);
+
   mainWindow.loadURL(`file://${__dirname}/app.html`);
 
   // @TODO: Use 'ready-to-show' event
@@ -81,6 +90,6 @@ app.on('ready', async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
+  // const menuBuilder = new MenuBuilder(mainWindow);
+  // menuBuilder.buildMenu();
 });
