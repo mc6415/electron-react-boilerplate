@@ -5,12 +5,14 @@ import App from './containers/App';
 import HomePage from './containers/HomePage';
 import CounterPage from './containers/CounterPage';
 import ProfilePage from './components/ProfilePage';
+import TagPage from './components/TagPage';
 
 export default () => (
   <App>
     <Switch>
       <Route path="/counter" component={CounterPage} />
       <Route path="/profile" component={ProfilePage} />
+      <Route path="/battletag/:id" component={TagPage} />
       <Route path="/" component={HomePage} />
     </Switch>
   </App>
